@@ -11,7 +11,7 @@ class FindExpensesUsecaseImpl(
 ): FindExpensesUsecase {
     override fun findAll(): List<Expense> =
         expensesRepository.findAll().map { Expense(
-            id = it.id,
+            id = it.id!!,
             title = it.title,
             description = it.description,
             amount = it.amount,
@@ -20,18 +20,20 @@ class FindExpensesUsecaseImpl(
         ) }
 
     @Throws(Exception::class)
-    override fun findOne(id: Long): Expense =
-        expensesRepository.findById(id).ifPresent {
-            Expense(
-                id = it.id,
-                title = it.title,
-                description = it.description,
-                amount = it.amount,
-                createdAt = it.createdAt,
-                expendedAt = it.expendedAt,
+    override fun findOne(id: Long): Expense {
+        val data = expensesRepository.findById(id)
+        if (data.isPresent) {
+            val found = data.get()
+            return  Expense(
+                id = found.id!!,
+                title = found.title,
+                description = found.description,
+                amount = found.amount,
+                createdAt = found.createdAt,
+                expendedAt = found.expendedAt,
             )
-        }.run {
+        } else {
             throw Exception("Expense not found")
         }
-
+    }
 }

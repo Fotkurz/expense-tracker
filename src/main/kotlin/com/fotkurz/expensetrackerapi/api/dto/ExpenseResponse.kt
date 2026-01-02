@@ -1,9 +1,9 @@
-package com.fotkurz.expensetrackerapi.api.impl
+package com.fotkurz.expensetrackerapi.api.dto
 
 import com.fotkurz.expensetrackerapi.domain.Expense
 import java.time.ZonedDateTime
 
-data class FindExpensesResponse(
+data class ExpenseResponse(
     val id: Long,
     val title: String,
     val description: String? = null,
@@ -12,8 +12,8 @@ data class FindExpensesResponse(
     val expendedAt: ZonedDateTime,
 ) {
     companion object {
-        fun fromDomain(domain: Expense): FindExpensesResponse {
-            return FindExpensesResponse(
+        fun fromDomain(domain: Expense): ExpenseResponse {
+            return ExpenseResponse(
                 domain.id,
                 domain.title,
                 domain.description,

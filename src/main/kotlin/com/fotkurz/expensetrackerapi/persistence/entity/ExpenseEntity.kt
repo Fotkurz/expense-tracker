@@ -5,18 +5,18 @@ import java.time.ZonedDateTime
 
 @Entity
 @Table(name = "expenses")
-class Expense(
+class ExpenseEntity(
     @field:Id
     @field:GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long,
+    val id: Long? = null,
     @field:Column(nullable = false, unique = false, length = 25)
-    val title: String,
+    var title: String,
     @field:Column(nullable = true, unique = false, length = 255)
-    val description: String? = null,
+    var description: String? = null,
     @field:Column(nullable = false, unique = false)
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
     @field:Column(nullable = false, unique = false)
-    val expendedAt : ZonedDateTime = ZonedDateTime.now(),
+    var expendedAt : ZonedDateTime = ZonedDateTime.now(),
     @field:Column(nullable = false, unique = false)
-    val amount: Double,
+    var amount: Double,
 )
