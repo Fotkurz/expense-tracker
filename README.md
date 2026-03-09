@@ -43,4 +43,13 @@ erDiagram
     }
 ```
 
+## TODOS
+
+- [ ] Add db conn
+- [ ] Add docker-compose
+- [ ] Proper repository
+- [ ] Hibernate and JPA
+- [ ] Proper http controller error handling
+- [ ] Authentication and Authorization
+
 
