@@ -1,13 +1,13 @@
 package com.expenses.api.repository
 
-import com.expenses.api.domain.Expense
 import com.expenses.api.repository.entity.ExpenseEntity
-import org.springframework.stereotype.Service
+import org.springframework.context.annotation.Bean
+import org.springframework.data.relational.core.mapping.event.BeforeConvertCallback
+import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
+import java.util.UUID
 
-@Service
-class ExpenseRepository {
-    fun create(expense: Expense): ExpenseEntity {
-        println("created")
-        return ExpenseEntity()
-    }
+@Repository
+interface ExpenseRepository : CrudRepository<ExpenseEntity, UUID> {
+
 }

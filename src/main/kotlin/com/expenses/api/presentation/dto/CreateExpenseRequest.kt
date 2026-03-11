@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size
 import org.jetbrains.annotations.NotNull
 import java.time.ZonedDateTime
 import java.util.UUID
-import kotlin.math.exp
 
 data class CreateExpenseRequest(
     @field:NotEmpty
@@ -14,6 +13,7 @@ data class CreateExpenseRequest(
     val title: String,
     @field:NotNull
     val amount: Double,
+    val labels: List<String>? = listOf("OTHER"),
     @field:NotNull
     val expendedAt: ZonedDateTime
 ) {
@@ -21,6 +21,7 @@ data class CreateExpenseRequest(
             Expense(
                 title = title,
                 amount = amount,
+                labels = labels,
                 expendedAt = expendedAt,
                 createdAt = ZonedDateTime.now(),
             )
