@@ -1,8 +1,8 @@
 package com.expenses.api.presentation
 
 import com.expenses.api.presentation.dto.CreateExpenseRequest
-import com.expenses.api.repository.entity.ExpenseEntity
-import com.expenses.api.usecase.CreateExpenseUseCase
+import com.expenses.api.presentation.dto.ExpenseResponse
+import com.expenses.api.service.ExpenseService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,13 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.util.Optional
 import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/v1/expenses"])
 class ExpenseHTTPController(
-    val createExpenseUseCase: CreateExpenseUseCase
+    val createExpenseUseCase: ExpenseService
 ) {
 
     @PostMapping
@@ -37,5 +36,5 @@ class ExpenseHTTPController(
     }
 
     @GetMapping("/{id}")
-    fun findOne(@PathVariable id: UUID): Optional<ExpenseEntity> = createExpenseUseCase.findById(id)
+    fun findOne(@PathVariable id: UUID): ExpenseResponse? = ExpenseResponse.fromDomain(createExpenseUseCase.findById(id))
 }

@@ -3,6 +3,8 @@ package com.expenses.api.domain
 import java.time.ZonedDateTime
 import java.util.UUID
 
+// TODO: must adjust the date time
+
 class Expense(
     val id: UUID? = null,
     val title: String,
