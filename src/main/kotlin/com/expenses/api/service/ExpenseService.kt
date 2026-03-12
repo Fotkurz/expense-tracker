@@ -4,9 +4,6 @@ import com.expenses.api.domain.Expense
 import com.expenses.api.repository.ExpenseRepository
 import com.expenses.api.repository.entity.ExpenseEntity
 import org.springframework.stereotype.Service
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.UUID
 
 @Service
@@ -16,6 +13,8 @@ class ExpenseService(
 
     @Throws(IllegalArgumentException::class)
     fun findById(id: UUID): Expense {
+        // TODO: findById failing because no converter for java.sql.Timestamp -> ZonedDateTime. must look up why
+        // TODO: method is ugly as hell, make it cleaner
         val possible = repo.findById(id)
         if (possible.isPresent) {
             val expense = possible.get()
@@ -23,9 +22,9 @@ class ExpenseService(
                 id = expense.id,
                 title = expense.title,
                 amount = expense.amount,
-                expendedAt = ZonedDateTime.ofLocal(expense.expendedAt.toLocalDateTime(), ZoneId.of("UTC"), ZoneOffset.UTC),
-                createdAt = ZonedDateTime.ofLocal(expense.createdAt.toLocalDateTime(), ZoneId.of("UTC"), ZoneOffset.UTC),
-                updatedAt = ZonedDateTime.ofLocal(expense.updatedAt?.toLocalDateTime(), ZoneId.of("UTC"), ZoneOffset.UTC)
+                expendedAt = expense.expendedAt,
+                createdAt = expense.createdAt,
+                updatedAt = expense.updatedAt,
             )
         }
 
@@ -47,6 +46,7 @@ class ExpenseService(
             )
             return saved.id!!
         } catch (ex: Exception) {
+            // TODO: add more contextualized exception
             throw ex
         }
     }
