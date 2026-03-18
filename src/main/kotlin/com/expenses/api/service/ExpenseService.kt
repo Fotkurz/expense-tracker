@@ -11,10 +11,7 @@ class ExpenseService(
     val repo: ExpenseRepository
 ) {
 
-    @Throws(IllegalArgumentException::class)
     fun findById(id: UUID): Expense {
-        // TODO: findById failing because no converter for java.sql.Timestamp -> ZonedDateTime. must look up why
-        // TODO: method is ugly as hell, make it cleaner
         val possible = repo.findById(id)
         if (possible.isPresent) {
             val expense = possible.get()
@@ -22,9 +19,10 @@ class ExpenseService(
                 id = expense.id,
                 title = expense.title,
                 amount = expense.amount,
-                expendedAt = expense.expendedAt,
-                createdAt = expense.createdAt,
-                updatedAt = expense.updatedAt,
+                labels = expense.labels,
+                expendedAt = expense.expendedAt.toZonedDateTime(),
+                createdAt = expense.createdAt.toZonedDateTime(),
+                updatedAt = expense.updatedAt?.toZonedDateTime(),
             )
         }
 
@@ -39,9 +37,9 @@ class ExpenseService(
                     title = expense.title,
                     amount = expense.amount,
                     labels = expense.labels!!,
-                    expendedAt = expense.expendedAt,
-                    createdAt = expense.createdAt,
-                    updatedAt = expense.updatedAt,
+                    expendedAt = expense.expendedAt.toOffsetDateTime(),
+                    createdAt = expense.createdAt.toOffsetDateTime(),
+                    updatedAt = expense.updatedAt?.toOffsetDateTime(),
                 )
             )
             return saved.id!!
@@ -50,4 +48,5 @@ class ExpenseService(
             throw ex
         }
     }
+
 }
