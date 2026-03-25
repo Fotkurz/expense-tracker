@@ -1,5 +1,6 @@
 package com.expenses.api.repository.entity
 
+import com.expenses.api.domain.Expense
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.springframework.data.annotation.Id
@@ -25,24 +26,38 @@ class ExpenseEntity(
 
     @field:Column("title")
     @field:Size(min = 1, max = 55)
-    val title: String,
+    var title: String,
 
     @field:NotNull
     @field:Column("amount")
-    val amount: Double,
+    var amount: Double,
     @field:Column("labels")
-    val labels: List<String>,
+    var labels: List<String>,
 
     @field:NotNull
     @field:Column("expended_at")
-    val expendedAt: OffsetDateTime,
+    var expendedAt: OffsetDateTime,
 
     @field:NotNull
     @field:Column("created_at")
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
     @field:Column("updated_at")
-    val updatedAt: OffsetDateTime? = null,
+    var updatedAt: OffsetDateTime? = null,
 
     @field:Column("user_id")
-    val userId: UUID = UUID.fromString("a2cc64db-b745-4ee1-83e7-27fae887d1c6"),
-    )
+    val userId: UUID,
+    ) {
+
+    fun toDomain(): Expense =
+        Expense(
+            id = id,
+            userId = userId,
+            title = title,
+            amount = amount,
+            labels = labels,
+            expendedAt = expendedAt.toZonedDateTime(),
+            createdAt = createdAt.toZonedDateTime(),
+            updatedAt = updatedAt?.toZonedDateTime(),
+        )
+
+}
