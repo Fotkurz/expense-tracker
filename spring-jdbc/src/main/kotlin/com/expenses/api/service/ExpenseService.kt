@@ -8,6 +8,7 @@ import com.expenses.api.presentation.dto.FindExpensesRequest
 import com.expenses.api.repository.ExpenseRepository
 import com.expenses.api.repository.entity.ExpenseEntity
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime
@@ -82,6 +83,7 @@ class ExpenseService(
         return possible.get().toDomain()
     }
 
+    @Transactional
     fun create(expense: Expense): UUID {
 
         try {
@@ -101,10 +103,12 @@ class ExpenseService(
         }
     }
 
+    @Transactional
     fun delete(id: UUID) {
         repository.deleteById(id)
     }
 
+    @Transactional
     fun update(id: UUID, title: String?, amount: Double?, labels: List<String>?, expendedAt: ZonedDateTime?): Expense {
         val optional = repository.findById(id)
         if (!optional.isPresent) {
