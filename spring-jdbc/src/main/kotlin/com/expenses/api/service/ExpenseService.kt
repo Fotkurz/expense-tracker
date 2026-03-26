@@ -1,9 +1,9 @@
 package com.expenses.api.service
 
-import com.expenses.api.domain.ExpendedAtFilter
 import com.expenses.api.domain.Expense
 import com.expenses.api.domain.Page
 import com.expenses.api.domain.exception.ResourceNotFoundException
+import com.expenses.api.domainx.ExpendedAtFilter
 import com.expenses.api.presentation.dto.FindExpensesRequest
 import com.expenses.api.repository.ExpenseRepository
 import com.expenses.api.repository.entity.ExpenseEntity

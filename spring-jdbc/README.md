@@ -6,12 +6,12 @@ Project done following the premisses described in [this](https://roadmap.sh/proj
 
 - [x] Add db conn
 - [x] Proper repository
-- [x] Fix date and time types to be more consistent and use only the ISO 8601 UTC format across project 
 - [x] CRUD
-- [ ] Hibernate and JPA
-- [ ] Proper http controller error handling
-- [ ] Add docker-compose
+- [x] Proper http controller error handling
+- [ ] Fix date and time types to be more consistent and use only the ISO 8601 UTC format across project
+- [ ] Fix TODOs
 - [ ] Authentication and Authorization
+- [ ] Add docker-compose
 
 
 ## Specs
