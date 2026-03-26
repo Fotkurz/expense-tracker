@@ -3,13 +3,12 @@ package com.expenses.api.service
 import com.expenses.api.domain.ExpendedAtFilter
 import com.expenses.api.domain.Expense
 import com.expenses.api.domain.Page
+import com.expenses.api.domain.exception.ResourceNotFoundException
 import com.expenses.api.presentation.dto.FindExpensesRequest
 import com.expenses.api.repository.ExpenseRepository
 import com.expenses.api.repository.entity.ExpenseEntity
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -77,7 +76,7 @@ class ExpenseService(
     fun findById(id: UUID): Expense {
         val possible = repository.findById(id)
         if (!possible.isPresent) {
-            throw IllegalArgumentException("Expense with id $id does not exist")
+            throw ResourceNotFoundException(resourceId = id.toString())
         }
 
         return possible.get().toDomain()
@@ -117,7 +116,7 @@ class ExpenseService(
         expense.title = title ?: expense.title
         expense.labels = labels ?: expense.labels
         expense.amount = amount ?: expense.amount
-        expense.expendedAt = OffsetDateTime.from(expense.expendedAt)
+        expense.expendedAt = OffsetDateTime.from(expendedAt) ?: OffsetDateTime.from(expense.expendedAt)
 
         expense.updatedAt = OffsetDateTime.now()
 

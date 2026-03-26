@@ -1,16 +1,24 @@
 package com.expenses.api.service
 
 import com.expenses.api.domain.Expense
+import com.expenses.api.domain.exception.ResourceNotFoundException
 import com.expenses.api.presentation.dto.FindExpensesRequest
 import com.expenses.api.repository.ExpenseRepository
 import com.expenses.api.repository.entity.ExpenseEntity
+import io.mockk.MockK
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkClass
+import jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle
+import org.assertj.core.data.Offset
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertNull
+import org.junit.jupiter.api.assertThrows
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -27,6 +35,7 @@ class ExpenseServiceTest(
 ) {
     private lateinit var expenseRepository: ExpenseRepository
     private lateinit var expenseService: ExpenseService
+    private val testUserId = UUID.fromString("a2cc64db-b745-4ee1-83e7-27fae887d1c6")
 
     @BeforeEach
     fun setup() {
@@ -73,7 +82,7 @@ class ExpenseServiceTest(
     @Test
     fun `should find one expense by id`() {
         val id = UUID.randomUUID()
-        val userId = UUID.fromString("a2cc64db-b745-4ee1-83e7-27fae887d1c6")
+        val userId = testUserId
         val expense = ExpenseEntity(
             id = id,
             title = "title",
@@ -109,7 +118,30 @@ class ExpenseServiceTest(
     }
 
     @Test
-    fun `should create a expense with success`() {
+    fun `should threw ResourceNotFoundException if not found by id`() {
+        val id = UUID.randomUUID()
+        val userId = testUserId
+        val expense = ExpenseEntity(
+            id = id,
+            title = "title",
+            createdAt = OffsetDateTime.now(),
+            expendedAt = OffsetDateTime.now(),
+            amount = 100.0,
+            labels = listOf("label1", "label2"),
+            userId = userId,
+        )
+
+        every { expenseRepository.findById(eq(id)) } returns Optional.empty()
+
+        val exception = assertThrows<ResourceNotFoundException> {
+            expenseService.findById(id)
+        }
+
+        assertEquals("resource with id <$id> not found", exception.message)
+    }
+
+    @Test
+    fun `should create a expense and return its id`() {
         val id = UUID.randomUUID()
 
         val new = Expense(
@@ -130,5 +162,55 @@ class ExpenseServiceTest(
         val result = expenseService.create(new)
 
         assertEquals(id, result)
+    }
+
+    @Test
+    fun `should delete by id`() {
+        val id = UUID.randomUUID()
+        every { expenseRepository.deleteById(id) } returns Unit
+        assertDoesNotThrow { expenseRepository.deleteById(id) }
+    }
+
+    @Test
+    fun `should update expense by id`() {
+        val id = UUID.randomUUID()
+        val newTitle = "title"
+        val amount = 100.0
+        val labels = listOf("label1", "label2")
+        val expendedAt = ZonedDateTime.now()
+
+        val old = ExpenseEntity(
+            id = id,
+            title = "old",
+            userId = testUserId,
+            createdAt = OffsetDateTime.now().minusWeeks(1),
+            expendedAt = OffsetDateTime.now().minusWeeks(1),
+            updatedAt = null,
+            amount = 50.0,
+            labels = listOf(),
+        )
+
+        val new = ExpenseEntity(
+            id, newTitle, amount, labels, expendedAt.toOffsetDateTime(), old.createdAt, mockkClass(
+                OffsetDateTime::class
+            ), testUserId
+        )
+
+        every { expenseRepository.findById(id) } returns Optional.of(old)
+        every {
+            expenseRepository.save(match {
+                it.id == id && it.title == newTitle && it.amount == amount && it.expendedAt == OffsetDateTime.from(expendedAt) && it.labels == labels
+            })
+        } returns new
+
+        val result = expenseService.update(id, newTitle, amount, labels, expendedAt)
+
+        assertEquals(id, result.id)
+        assertEquals(newTitle, result.title)
+        assertEquals(amount, result.amount)
+        assertEquals(labels, result.labels)
+        assertEquals(testUserId, result.userId)
+        assertEquals(expendedAt.toInstant(), result.expendedAt.toInstant())
+        assertNotNull(result.updatedAt)
     }
 }
