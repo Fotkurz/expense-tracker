@@ -155,7 +155,7 @@ With hours:
 
 - `%Y-%m-%dT%H:%M:%sZ`
 
-Use a range like format to specify: `from_to`
+Use a range like format to specify: `from@to`
 
 Example: From **2026-03-10** to **2026-03-12**
 
